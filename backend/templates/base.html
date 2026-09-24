@@ -27,7 +27,7 @@
   <script>
     document.addEventListener("submit", async (event) => {
       const form = event.target;
-      if (!form.dataset.swap) return;
+      if (!form.dataset.asyncSubmit) return;
       event.preventDefault();
       const res = await fetch(form.action, {
         method: "POST",

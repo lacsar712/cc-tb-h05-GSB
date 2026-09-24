@@ -3,7 +3,7 @@
 {% if pending_sync %}<p class="warn">列表待同步</p>{% endif %}
 {% if show_submit_hint %}<p class="warn">可提交</p>{% endif %}
 {% if can_write %}
-<form method="post" action="{{ url_for('create') }}" data-swap="1">
+<form method="post" action="{{ url_for('create') }}" data-async-submit="1">
   <h2>新开一轮审评</h2>
   <input name="lot" placeholder="批次" required />
   <input name="aroma" type="number" step="0.1" min="0" max="10" placeholder="香气" required />

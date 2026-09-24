@@ -28,6 +28,18 @@ docker compose up --build
 
 ## 验收
 
-1. taster 登录后看到春茶-A 通过、夏茶-C 不通过。
+1. taster 登录后看到春茶-A（香气 8、滋味 6、加权 7.0）通过、夏茶-C 不通过。
 2. 再提交一组高分，新行出现在表头，页面不整页刷新。
-3. observer 登录后没有提交表单。
+3. observer 登录后没有提交表单，直接 POST `/cuppings` 返回 403。
+
+## 自动化断言
+
+香气/滋味四面一致性（写入后读库、总表、详情、片段）+ 只读会话权限：
+
+```bash
+docker compose up -d --build
+docker compose exec -T web python tests/test_aroma_taste_consistency.py
+```
+
+春茶-A 固定为香气 8、滋味 6 作对照；测试再提交一笔香气 6、滋味 8，
+四面读出的两列均不得对调，且加权分分别为 7.0 / 7.4（对调即穿帮）。

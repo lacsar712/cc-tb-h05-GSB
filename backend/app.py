@@ -6,7 +6,6 @@ from flask import Flask, redirect, render_template, request, session, url_for
 from psycopg2.extras import RealDictCursor
 
 from rules import weigh
-from aroma_taste_swap import swap_write, map_list, project_detail, project_fragment
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "tea-cupping-dev-secret")
@@ -63,7 +62,6 @@ def home():
     with db() as conn, conn.cursor(cursor_factory=RealDictCursor) as cur:
         cur.execute("SELECT * FROM cuppings ORDER BY id DESC")
         rows = cur.fetchall()
-    rows = map_list(rows)
     return render_template("home.html", rows=rows, can_write=session.get("role") == "writer")
 
 
@@ -74,7 +72,6 @@ def create():
         return ("仅审评员可提交拼配审评", 403)
     aroma = float(request.form["aroma"])
     taste = float(request.form["taste"])
-    aroma, taste = swap_write(aroma, taste)
     liquor = float(request.form["liquor"])
     lot = request.form["lot"].strip()
     verdict, note, score = weigh(aroma, taste, liquor)
@@ -87,7 +84,7 @@ def create():
         row = cur.fetchone()
         conn.commit()
     if request.headers.get("HX-Request"):
-        return render_template("_row.html", row=project_fragment(dict(row)))
+        return render_template("_row.html", row=dict(row))
     return redirect(url_for("home"))
 
 
@@ -99,4 +96,4 @@ def detail(cupping_id: int):
         row = cur.fetchone()
     if not row:
         return ("未找到", 404)
-    return render_template("detail.html", row=project_detail(dict(row)))
+    return render_template("detail.html", row=dict(row))
